@@ -1,0 +1,41 @@
+version: '3'
+services:
+
+  flask:
+    build: ./api
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./api:/usr/src/app
+    environment:
+      DATABASE_HOST: mysqldb
+      DATABASE_NAME: database
+      DATABASE_PASSWORD: password
+      DATABASE_USER: root
+
+  client:
+    build: ./client
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./client:/usr/src/app
+    environment:
+      SERVICE_PORT: 8080
+
+  mysqldb:
+    image: "mysql:latest"
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: database
+      MYSQL_USER: root
+
+  ingestion:
+    build: ./ingestion
+    volumes:
+      - ./ingestion:/usr/src/app
+    environment:
+      DATABASE_HOST: mysqldb
+      DATABASE_NAME: database
+      DATABASE_PASSWORD: password
+      DATABASE_USER: root
